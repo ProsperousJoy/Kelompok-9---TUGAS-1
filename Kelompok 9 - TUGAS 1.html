@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelompok 9 - TUGAS 1</title>
+    
+    <!-- Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- jsMind & CSS -->
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsmind@0.5.4/style/jsmind.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsmind@0.5.4/js/jsmind.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        #jsmind_container {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            background-color: #f1f5f9;
+            position: relative;
+        }
+
+        .jsmind-inner {
+            scroll-behavior: smooth !important; 
+            overflow: hidden !important;
+        }
+
+        
+        jmnode {
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 500;
+            padding: 12px 18px !important;
+            border-radius: 20px !important;
+            background-color: white !important;
+            color: #334155 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            border: 2px solid transparent;
+            text-align: center;
+            line-height: 1.5 !important;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+            
+            white-space: nowrap !important;
+            width: auto !important; 
+            height: auto !important;
+            max-width: none !important;
+        }
+
+        jmnode:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15) !important;
+            z-index: 20;
+        }
+
+        jmnode[nodeid="root"] {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+            color: white !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            border-radius: 30px !important;
+            padding: 18px 28px !important;
+        }
+
+        /* Cabang Kiri */
+        jmnode[nodeid^="1.2"] { border-color: #10b981; }
+        jmnode[nodeid="1.2"] { background-color: #059669 !important; color: white !important; font-weight: 600 !important; font-size: 16px !important;}
+        jmnode[nodeid^="1.2."]:not([nodeid="1.2"]) { background-color: #ecfdf5 !important; }
+
+        /* Cabang Kanan */
+        jmnode[nodeid^="1.5"] { border-color: #f97316; }
+        jmnode[nodeid="1.5"] { background-color: #ea580c !important; color: white !important; font-weight: 600 !important; font-size: 16px !important;}
+        jmnode[nodeid^="1.5."]:not([nodeid="1.5"]) { background-color: #fff7ed !important; }
+
+        /* Tombol (+) dan (-) */
+        jmexpander {
+            border-radius: 50% !important;
+            background-color: #64748b !important;
+            color: #ffffff !important;
+            width: 26px !important;
+            height: 26px !important;
+            line-height: 24px !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            font-family: monospace !important;
+            border: 2px solid white !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+            transition: all 0.2s ease;
+            z-index: 25 !important;
+        }
+        jmexpander:hover { background-color: #334155 !important; transform: scale(1.15); }
+
+        .btn-control {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-control:hover { background-color: #3b82f6; color: white; }
+
+        .instruction-toast {
+            position: absolute;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-size: 1rem;
+            pointer-events: none;
+            animation: fadeOut 6s forwards;
+            animation-delay: 4s;
+            z-index: 40;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Konten Utama -->
+    <header>
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Mindmap Pengujian & Implementasi Sistem</h1>
+                <p class="text-blue-100 text-sm mt-1">Subbab 1.2 Dasar Mutu & 1.5 Pengujian Perangkat Lunak</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Area Mind Map -->
+    <div id="jsmind_container">
+        <div class="instruction-toast">💡<br>Klik tanda (+) untuk membuka materi, Gunakan <i>arrow keys</i> untuk menggeser kamera</div>
+    </div>
+
+    <script>
+        // Data Mindmap
+        const mindData = [
+            {"id": "root", "isroot": true, "topic": "Pengujian & Implementasi Sistem"},
+             
+            {"id": "1.2", "parentid": "root", "topic": "Dasar-Dasar Mutu", "direction": "left"},
+            
+            {"id": "1.2.1", "parentid": "1.2", "topic": "Penjaminan Mutu<br/>vs Pengendalian Mutu"},
+            {"id": "1.2.1_1", "parentid": "1.2.1", "topic": "<b>Penjaminan Mutu:</b> Fokus<br/>proses pencegahan cacat"},
+            {"id": "1.2.1_2", "parentid": "1.2.1", "topic": "<b>Pengendalian Mutu:</b> Fokus<br/>produk pendeteksi cacat"},
+            
+            {"id": "1.2.2", "parentid": "1.2", "topic": "Sudut Pandang Mutu"},
+            {"id": "1.2.2_1", "parentid": "1.2.2", "topic": "Kesesuaian dengan Spesifikasi"},
+            {"id": "1.2.2_2", "parentid": "1.2.2", "topic": "Kelayakan Guna di Dunia Nyata"},
+            {"id": "1.2.2_3", "parentid": "1.2.2", "topic": "Kepuasan Pelanggan Menyeluruh"},
+            
+            {"id": "1.2.3", "parentid": "1.2", "topic": "Ciri Perangkat Lunak Bermutu"},
+            {"id": "1.2.3_1", "parentid": "1.2.3", "topic": "Bebas dari kesalahan<br/>sistem yang parah"},
+            {"id": "1.2.3_2", "parentid": "1.2.3", "topic": "Selesai tepat waktu<br/>dan sesuai anggaran"},
+            {"id": "1.2.3_3", "parentid": "1.2.3", "topic": "Memenuhi semua kebutuhan<br/>fungsional dan sistem"},
+            {"id": "1.2.3_4", "parentid": "1.2.3", "topic": "Struktur kode mudah<br/>diperbaiki dan dirawat"},
+            
+            {"id": "1.2.4", "parentid": "1.2", "topic": "Biaya Mutu"},
+            {"id": "1.2.4_1", "parentid": "1.2.4", "topic": "Biaya Kesesuaian<br/>(Dampak Positif)"},
+            {"id": "1.2.4_1_1", "parentid": "1.2.4_1", "topic": "Biaya Pencegahan<br/>(Pelatihan, Perencanaan)"},
+            {"id": "1.2.4_1_2", "parentid": "1.2.4_1", "topic": "Biaya Penilaian<br/>(Pengujian, Inspeksi)"},
+            {"id": "1.2.4_2", "parentid": "1.2.4", "topic": "Biaya Ketidaksesuaian<br/>(Dampak Negatif)"},
+            {"id": "1.2.4_2_1", "parentid": "1.2.4_2", "topic": "Kegagalan Internal<br/>(Ditemukan sebelum rilis)"},
+            {"id": "1.2.4_2_2", "parentid": "1.2.4_2", "topic": "Kegagalan Eksternal<br/>(Tuntutan Hukum, Keluhan)"},
+            
+            {"id": "1.2.5", "parentid": "1.2", "topic": "Faktor Mutu"},
+            {"id": "1.2.5_1", "parentid": "1.2.5", "topic": "Operasional (Keandalan,<br/>Ketergunaan, Efisiensi)"},
+            {"id": "1.2.5_2", "parentid": "1.2.5", "topic": "Perbaikan (Keterawatan<br/>kode, Keterujian)"},
+            {"id": "1.2.5_3", "parentid": "1.2.5", "topic": "Pemindahan (Portabilitas,<br/>Ketergunaan Ulang)"},
+
+            {"id": "1.5", "parentid": "root", "topic": "Pengujian Perangkat Lunak", "direction": "right"},
+            
+            {"id": "1.5.1", "parentid": "1.5", "topic": "Tujuh Prinsip Pengujian"},
+            {"id": "1.5.1_1", "parentid": "1.5.1", "topic": "Menunjukkan Adanya Cacat,<br/>Bukan Bukti Sempurna"},
+            {"id": "1.5.1_2", "parentid": "1.5.1", "topic": "Pengujian Menyeluruh Sepenuhnya<br/>Adalah Hal Mustahil"},
+            {"id": "1.5.1_3", "parentid": "1.5.1", "topic": "Lakukan Pengujian Sedini<br/>Mungkin Sejak Awal"},
+            {"id": "1.5.1_4", "parentid": "1.5.1", "topic": "Sebagian Besar Cacat Berkumpul<br/>Pada Modul Tertentu"},
+            {"id": "1.5.1_5", "parentid": "1.5.1", "topic": "Paradoks Pestisida: Uji yang sama<br/>tak temukan cacat baru"},
+            {"id": "1.5.1_6", "parentid": "1.5.1", "topic": "Metode Pengujian Sangat Bergantung<br/>Pada Konteks Aplikasi"},
+            {"id": "1.5.1_7", "parentid": "1.5.1", "topic": "Mitos: Sistem Tanpa Cacat Belum<br/>Tentu Sesuai Kebutuhan"},
+
+            {"id": "1.5.2", "parentid": "1.5", "topic": "Mengapa Kita<br/>Melakukan Pengujian?"},
+            {"id": "1.5.2_1", "parentid": "1.5.2", "topic": "Mengurangi Risiko Kerusakan<br/>Saat Beroperasi"},
+            {"id": "1.5.2_2", "parentid": "1.5.2", "topic": "Memastikan Program Sesuai<br/>dengan Spesifikasi"},
+            {"id": "1.5.2_3", "parentid": "1.5.2", "topic": "Membangun Keyakinan<br/>Sebelum Peluncuran"},
+            {"id": "1.5.2_4", "parentid": "1.5.2", "topic": "Mematuhi Aturan dan<br/>Standar Hukum Industri"},
+
+            {"id": "1.5.3", "parentid": "1.5", "topic": "Pembuat Kode<br/>Bukan Penguji Ideal"},
+            {"id": "1.5.3_1", "parentid": "1.5.3", "topic": "Bias Optimisme Bahwa Karyanya<br/>Pasti Benar"},
+            {"id": "1.5.3_2", "parentid": "1.5.3", "topic": "Pola Pikir Berlawanan: Pembuat<br/>Membangun, Penguji Merusak"},
+            {"id": "1.5.3_3", "parentid": "1.5.3", "topic": "Sulit Melihat Kesalahan Logika<br/>Sendiri (Titik Buta)"},
+
+            {"id": "1.5.4", "parentid": "1.5", "topic": "Faktor Penghalang Pengujian"},
+            {"id": "1.5.4_1", "parentid": "1.5.4", "topic": "Keterbatasan Waktu Proyek<br/>dan Anggaran Dana"},
+            {"id": "1.5.4_2", "parentid": "1.5.4", "topic": "Kerumitan Arsitektur Sistem<br/>dan Teknologi Baru"},
+            {"id": "1.5.4_3", "parentid": "1.5.4", "topic": "Kebutuhan Klien yang Selalu<br/>Berubah"},
+            {"id": "1.5.4_4", "parentid": "1.5.4", "topic": "Kurangnya Personil Penguji<br/>dan Lingkungan Uji"},
+
+            {"id": "1.5.5", "parentid": "1.5", "topic": "Pengujian Pihak<br/>Ketiga (Mandiri)"},
+            {"id": "1.5.5_1", "parentid": "1.5.5", "topic": "Sangat Objektif dan Terhindar<br/>dari Konflik Kepentingan"},
+            {"id": "1.5.5_2", "parentid": "1.5.5", "topic": "Lebih Gigih Mencari Bug<br/>Karena Berasumsi Ada Cacat"},
+            {"id": "1.5.5_3", "parentid": "1.5.5", "topic": "Melapor Langsung Ke Atasan Penjamin<br/>Mutu untuk Hindari Manipulasi"}
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mind = {
+                "meta": { "name": "Tugas 1", "author": "Mahasiswa" },
+                "format": "node_array",
+                "data": mindData
+            };
+            
+            const options = {
+                container: 'jsmind_container',
+                editable: false,
+                theme: 'primary',
+                view: {
+                    hmargin: 800,
+                    vmargin: 800,
+                    line_width: 3,
+                    line_color: '#94a3b8'
+                },
+                layout: {
+                    hspace: 90,
+                    vspace: 50,
+                    pspace: 60
+                }
+            };
+            
+            // Render Mindmap
+            window.jm = jsMind.show(options, mind);
+            window.jm.collapse_all();
+
+            // Simpan Scroll Area
+            const scrollArea = document.querySelector('.jsmind-inner');
+
+            // Listener Arrow Keys
+            window.addEventListener('keydown', (e) => {
+                if(!scrollArea) return;
+                
+            // Switch Case Arah
+            if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
+                const panAmount = 120; // Kecepatan Kamera
+                switch(e.key) {
+                    case 'ArrowUp':
+                        scrollArea.scrollBy({ top: -panAmount, left: 0, behavior: 'smooth' });
+                        e.preventDefault();
+                        break;
+                    case 'ArrowDown':
+                        scrollArea.scrollBy({ top: panAmount, left: 0, behavior: 'smooth' });
+                        e.preventDefault();
+                        break;
+                    case 'ArrowLeft':
+                        scrollArea.scrollBy({ top: 0, left: -panAmount, behavior: 'smooth' });
+                        e.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                        scrollArea.scrollBy({ top: 0, left: panAmount, behavior: 'smooth' });
+                        e.preventDefault();
+                        break;
+                    }
+                }
+            });
+
+            // Auto-pan saat Click
+            document.getElementById('jsmind_container').addEventListener('click', function(e) {
+                let bubbleId = null;
+                
+                if (e.target.tagName.toLowerCase() === 'jmexpander') {
+                    bubbleId = e.target.getAttribute('nodeid');
+                } else if (e.target.tagName.toLowerCase() === 'jmnode') {
+                    bubbleId = e.target.getAttribute('nodeid');
+                }
+                
+                if (bubbleId) {
+                    setTimeout(() => {
+                        const targetElement = document.querySelector(`jmnode[nodeid="${bubbleId}"]`);
+                        if (!targetElement) return;
+
+                        const cameraX = targetElement.offsetLeft - (scrollArea.clientWidth / 2) + (targetElement.offsetWidth / 2);
+                        const cameraY = targetElement.offsetTop - (scrollArea.clientHeight / 2) + (targetElement.offsetHeight / 2);
+                        
+                        // Smooth Camera
+                        scrollArea.scrollTo({
+                            left: cameraX,
+                            top: cameraY,
+                            behavior: 'smooth'
+                        });
+                    }, 300); 
+                }
+            });
+            
+            // Tunggu Font Load
+            document.fonts.ready.then(() => {
+                setTimeout(() => {
+                    window.jm.resize();
+                    centerCameraInstantly();
+                }, 100);
+            });
+        });
+
+        function centerCameraOnRoot() {
+            setTimeout(() => {
+                const rootElement = document.querySelector('jmnode[nodeid="root"]');
+                const scrollArea = document.querySelector('.jsmind-inner');
+                if(!rootElement || !scrollArea) return;
+                
+                const cameraX = rootElement.offsetLeft - (scrollArea.clientWidth / 2) + (rootElement.offsetWidth / 2);
+                const cameraY = rootElement.offsetTop - (scrollArea.clientHeight / 2) + (rootElement.offsetHeight / 2);
+                
+                scrollArea.scrollTo({ left: cameraX, top: cameraY, behavior: 'smooth' });
+            }, 300);
+        }
+
+        function centerCameraInstantly() {
+            const rootElement = document.querySelector('jmnode[nodeid="root"]');
+            const scrollArea = document.querySelector('.jsmind-inner');
+            if(!rootElement || !scrollArea) return;
+            
+            const cameraX = rootElement.offsetLeft - (scrollArea.clientWidth / 2) + (rootElement.offsetWidth / 2);
+            const cameraY = rootElement.offsetTop - (scrollArea.clientHeight / 2) + (rootElement.offsetHeight / 2);
+            
+            // Matikan Smooth Camera
+            scrollArea.style.scrollBehavior = 'auto';
+            scrollArea.scrollTo({ left: cameraX, top: cameraY });
+            
+            // Nyalakan Smooth Camera
+            setTimeout(() => {
+                scrollArea.style.scrollBehavior = 'smooth';
+            }, 50);
+        }
+    </script>
+</body>
+</html>
